@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">Платформа аттестации</h1>
+<form method="post" action="/" onsubmit="return validateForm()">
+    <div class="mb-3">
+        <label class="form-label">Выберите предметы:</label>
+        {% for lesson in lessons %}
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="selected_lessons" value="{{ lesson }}"
+                   id="{{ lesson }}">
+            <label class="form-check-label" for="{{ lesson }}">
+                {{ lesson }}
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div id="error-msg" class="text-danger mb-3" style="display: none;">
+        Пожалуйста, выберите хотя бы один предмет.
+    </div>
+
+    <button type="submit" class="btn btn-primary">Начать аттестацию</button>
+</form>
+
+<script>
+function validateForm() {
+    const checkboxes = document.querySelectorAll('input[name="selected_lessons"]:checked');
+    const errorMsg = document.getElementById("error-msg");
+
+    if (checkboxes.length === 0) {
+        errorMsg.style.display = "block";
+        return false;
+    }
+
+    errorMsg.style.display = "none";
+    return true;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h2 class="mb-0 text-center">Экзаменационные вопросы</h2>
+    </div>
+    <div class="card-body">
+        <form action="/exam" method="post" id="examForm">
+            {% for question in questions %}
+            <div class="mb-4 p-3 border rounded">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="badge bg-secondary me-2">Вопрос {{ question.id }}</span>
+                    <span class="badge bg-info">{{ question.lesson|upper }}</span>
+                </div>
+                <p class="fw-bold mb-3">{{ question.question }}</p>
+                <input type="hidden" name="question_ids" value="{{ question.id }}">
+                <textarea class="form-control" name="user_answers"
+                          rows="4" required placeholder="Введите ваш ответ..."></textarea>
+            </div>
+            {% endfor %}
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="button" onclick="submitForm()" class="btn btn-success btn-lg">
+                    Отправить ответы
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function submitForm() {
+        // Показываем модальное окно загрузки
+        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+        loadingModal.show();
+
+        // Отправляем форму
+        document.getElementById('examForm').submit();
+    }
+</script>
+
+<!-- Модальное окно загрузки -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+     data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+                <h5 class="mt-3">Обработка ответов...</h5>
+                <p>Пожалуйста, подождите</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

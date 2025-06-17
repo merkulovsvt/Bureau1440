@@ -1,0 +1,25 @@
+name: bureau1440
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: [ '0' ]
+              capabilities:
+                - gpu
+    image: ollama/ollama
+    container_name: ollama
+    restart: "no"
+    volumes:
+      - ./data:/data
+    ports:
+      - "11434:11434"
