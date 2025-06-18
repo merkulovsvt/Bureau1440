@@ -24,17 +24,17 @@
 </form>
 
 <script>
-function validateForm() {
-    const checkboxes = document.querySelectorAll('input[name="selected_lessons"]:checked');
-    const errorMsg = document.getElementById("error-msg");
+    function validateForm() {
+        const checkboxes = document.querySelectorAll('input[name="selected_lessons"]:checked');
+        const errorMsg = document.getElementById("error-msg");
 
-    if (checkboxes.length === 0) {
-        errorMsg.style.display = "block";
-        return false;
+        if (checkboxes.length === 0) {
+            errorMsg.style.display = "block";
+            return false;
+        }
+
+        errorMsg.style.display = "none";
+        return true;
     }
-
-    errorMsg.style.display = "none";
-    return true;
-}
 </script>
 {% endblock %}

@@ -1,41 +1,51 @@
 import csv
-from pathlib import Path
+import json
+import aiofiles
 from typing import List
+from pathlib import Path
 
-from schemas import Question, ExamResult
+from app.schemas import Question, ExamResult
 
 
-def load_questions(lessons: List[str]) -> List[Question]:
+async def load_questions(lessons: List[str] = None, ids: List[int] = None) -> List[Question]:
+    csv_path = Path(__file__).parent / "data" / "questions.csv"
+
     questions = []
+    async with aiofiles.open(csv_path, mode='r', encoding='utf-8') as file:
+        content = await file.read()
+        reader = csv.DictReader(content.splitlines())
 
-    csv_path = Path('data/questions.csv')
-
-    with open(csv_path, mode='r', encoding='utf-8') as file:
-        reader = csv.DictReader(file)
         for row in reader:
-            if row['lesson'] in lessons:
+            if lessons and row['lesson'].lower() in [lesson.lower() for lesson in lessons]:
+                questions.append(Question(
+                    id=row['id'],
+                    lesson=row['lesson'],
+                    question=row['question'],
+                    answer=None
+                ))
+            elif ids and int(row['id']) in ids:
                 questions.append(Question(
                     id=row['id'],
                     lesson=row['lesson'],
                     question=row['question'],
                     answer=row['answer']
                 ))
+
     return questions
 
 
-def save_results(result: ExamResult):
-    results_path = Path('data/results.csv')
-
+async def save_results(result: ExamResult) -> None:
+    results_path = Path(__file__).parent / "data" / "results.csv"
     write_header = not results_path.exists() or results_path.stat().st_size == 0
 
-    with open(results_path, mode='a', newline='', encoding='utf-8') as file:
+    async with aiofiles.open(results_path, mode='a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
 
         if write_header:
-            writer.writerow(['datetime', 'form_data', 'ai_solution'])
+            await writer.writerow(['datetime', 'form_data', 'ai_solution'])
 
-        writer.writerow([
+        await writer.writerow([
             result.datetime,
-            json.dumps(result.form_data, ensure_ascii=False),
-            json.dumps([r.dict() for r in result.ai_solution], ensure_ascii=False)
+            json.dumps([elem.model_dump() for elem in result.form_data], ensure_ascii=False),
+            json.dumps([elem.model_dump() for elem in result.ai_solution], ensure_ascii=False)
         ])

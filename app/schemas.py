@@ -7,7 +7,7 @@ class Question(BaseModel):
     id: int
     lesson: Literal['ai', 'math', 'python']
     question: str
-    answer: str
+    answer: str | None
 
 
 class Answer(BaseModel):

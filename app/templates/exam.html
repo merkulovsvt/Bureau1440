@@ -8,20 +8,27 @@
     <div class="card-body">
         <form action="/exam" method="post" id="examForm">
             {% for question in questions %}
-            <div class="mb-4 p-3 border rounded">
+            <div class="mb-4 p-3 border rounded question-block">
                 <div class="d-flex align-items-center mb-2">
                     <span class="badge bg-secondary me-2">Вопрос {{ question.id }}</span>
                     <span class="badge bg-info">{{ question.lesson|upper }}</span>
                 </div>
                 <p class="fw-bold mb-3">{{ question.question }}</p>
                 <input type="hidden" name="question_ids" value="{{ question.id }}">
-                <textarea class="form-control" name="user_answers"
-                          rows="4" required placeholder="Введите ваш ответ..."></textarea>
+                <textarea class="form-control answer-field"
+                          name="user_answers"
+                          rows="4"
+                          required
+                          placeholder="Введите ваш ответ..."
+                          data-question-id="{{ question.id }}"></textarea>
+                <div class="invalid-feedback" id="feedback-{{ question.id }}">
+                    Пожалуйста, ответьте на этот вопрос
+                </div>
             </div>
             {% endfor %}
 
             <div class="d-grid gap-2 mt-4">
-                <button type="button" onclick="submitForm()" class="btn btn-success btn-lg">
+                <button type="button" onclick="validateForm()" class="btn btn-success btn-lg">
                     Отправить ответы
                 </button>
             </div>
@@ -29,18 +36,6 @@
     </div>
 </div>
 
-<script>
-    function submitForm() {
-        // Показываем модальное окно загрузки
-        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
-        loadingModal.show();
-
-        // Отправляем форму
-        document.getElementById('examForm').submit();
-    }
-</script>
-
-<!-- Модальное окно загрузки -->
 <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
      data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
@@ -55,4 +50,64 @@
         </div>
     </div>
 </div>
+
+<script>
+    function validateForm() {
+        let allFilled = true;
+        const answerFields = document.querySelectorAll('.answer-field');
+
+        answerFields.forEach(field => {
+            field.classList.remove('is-invalid');
+        });
+
+        answerFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                allFilled = false;
+
+                if (allFilled === false) {
+                    field.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    field.focus();
+                }
+            }
+        });
+
+        if (allFilled) {
+            submitForm();
+        }
+    }
+
+    function submitForm() {
+        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+        loadingModal.show();
+
+        document.getElementById('examForm').submit();
+    }
+
+    document.querySelectorAll('.answer-field').forEach(field => {
+        field.addEventListener('blur', function () {
+            if (!this.value.trim()) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+</script>
+
+<style>
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+
+    .invalid-feedback {
+        display: none;
+        color: #dc3545;
+        font-size: 0.875em;
+    }
+
+    .is-invalid + .invalid-feedback {
+        display: block;
+    }
+</style>
 {% endblock %}

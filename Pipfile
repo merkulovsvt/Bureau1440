@@ -11,6 +11,8 @@ jinja2 = "*"
 ollama = "*"
 redis = "*"
 python-multipart = "*"
+python-dotenv = "*"
+aiofiles = "*"
 
 [dev-packages]
 

@@ -2,19 +2,78 @@
 
 {% block content %}
 <div class="card shadow-sm">
-    <div class="card-header bg-success text-white">
+    <div class="card-header bg-primary text-white">
         <h2 class="mb-0 text-center">Результаты экзамена</h2>
     </div>
     <div class="card-body">
-        <!-- Здесь будут отображаться результаты -->
-        <div class="alert alert-success">
-            Ваши ответы успешно обработаны!
+        {% for answer, question, result in results_data %}
+        <div class="mb-4 p-3 border rounded">
+            <div class="d-flex align-items-center mb-2">
+                <span class="badge bg-secondary me-2">Вопрос {{ question.id }}</span>
+                <span class="badge bg-info">{{ question.lesson|upper }}</span>
+            </div>
+
+            <div class="mb-3">
+                <p class="fw-bold mb-1">Вопрос:</p>
+                <p class="ps-3">{{ answer.q }}</p>
+            </div>
+
+            <div class="mb-3 p-3 bg-light rounded">
+                <p class="fw-bold mb-1">Ваш ответ:</p>
+                <p class="ps-3">{{ answer.user_a|default("Ответ не предоставлен", true) }}</p>
+            </div>
+
+            <div class="mb-3 p-3 bg-light rounded">
+                <p class="fw-bold mb-1">Эталонный ответ:</p>
+                <p class="ps-3">{{ answer.real_a }}</p>
+            </div>
+
+            <div class="mt-4">
+                <h5 class="mb-3">Оценка ответа:</h5>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header bg-success text-white">
+                                Полнота ответа
+                            </div>
+                            <div class="card-body">
+                                <h3 class="card-title text-center">{{ result.Completeness.mark }}/10</h3>
+                                <p class="card-text">{{ result.Completeness.comment }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header bg-warning text-dark">
+                                Красочность изложения
+                            </div>
+                            <div class="card-body">
+                                <h3 class="card-title text-center">{{ result.Colorfulness.mark }}/10</h3>
+                                <p class="card-text">{{ result.Colorfulness.comment }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header bg-info text-white">
+                                Структура ответа
+                            </div>
+                            <div class="card-body">
+                                <h3 class="card-title text-center">{{ result.Structure.mark }}/10</h3>
+                                <p class="card-text">{{ result.Structure.comment }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+        {% endfor %}
 
-        <!-- Здесь можно добавить таблицу с результатами -->
-
-        <div class="d-grid gap-2 mt-4">
-            <a href="/" class="btn btn-primary">Вернуться на главную</a>
+        <div class="mt-4 text-center">
+            <a href="/" class="btn btn-primary btn-lg">Вернуться на главную</a>
         </div>
     </div>
 </div>
