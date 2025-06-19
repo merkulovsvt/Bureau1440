@@ -6,12 +6,9 @@ from concurrent.futures import ThreadPoolExecutor
 import ollama
 
 from app.schemas import ModelResult
+from app.utils import model_name
 
 executor = ThreadPoolExecutor()
-
-# model_name = 'owl/t-lite:instruct'
-model_name = 'hf.co/bartowski/microsoft_Phi-4-mini-instruct-GGUF:Q8_0'
-ollama.pull(model=model_name)
 
 prompt = """
 Ты - опытный преподаватель, который оценивает ответы пользователей по строгим критериям. 

@@ -1,17 +1,14 @@
-import os
 import json
 import redis.asyncio as redis
-from dotenv import load_dotenv
 from typing import Dict, Optional
 
 from app.schemas import Question, Answer, ModelResult
-
-load_dotenv()
+from app.utils import redis_host, redis_port, redis_db
 
 redis_client = redis.Redis(
-    host=os.getenv("REDIS_HOST"),
-    port=int(os.getenv("REDIS_PORT")),
-    db=os.getenv("REDIS_DB"),
+    host=redis_host,
+    port=redis_port,
+    db=redis_db,
     decode_responses=True
 )
 

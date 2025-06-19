@@ -48,6 +48,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_DB=0
+      - MODEL_NAME=hf.co/aovchinnikov/T-lite-it-1.0-Q4_K_M-GGUF:Q4_K_M
     networks:
       - general-net
 

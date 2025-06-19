@@ -4,17 +4,27 @@ import asyncio
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from app.schemas import Answer, ExamResult
-from app.utils import load_questions, save_results
+from app.utils import load_questions, save_results, model_name
 from app.llm import evaluate_answer, evaluate_answer_async
 from app.sessions import save_session_data, get_session_data
 
-app = FastAPI()
+import ollama
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await asyncio.to_thread(ollama.pull, model=model_name)
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 templates_dir = Path(__file__).parent / "templates"
 templates = Jinja2Templates(directory=str(templates_dir))
@@ -29,7 +39,7 @@ async def home(request: Request):
 
 
 @app.post("/", response_class=RedirectResponse)
-async def process_selection(request: Request, selected_lessons: List[str] = Form(...)):
+async def process_selection(selected_lessons: List[str] = Form(...)):
     session_id = str(uuid.uuid4())
     session_data = {
         "selected_lessons": [lesson.lower() for lesson in selected_lessons],
@@ -113,5 +123,6 @@ async def show_results(request: Request):
         "results_data": list(zip(answers, questions, model_results))
     })
 
-# if __name__ == "__main__":
-#     uvicorn.run("main:app", host="localhost", port=8000, reload=True)
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="localhost", port=8000, reload=True)

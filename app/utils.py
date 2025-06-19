@@ -1,10 +1,19 @@
+import os
 import csv
 import json
 import aiofiles
 from typing import List
 from pathlib import Path
+from dotenv import load_dotenv
 
 from app.schemas import Question, ExamResult
+
+load_dotenv()
+
+model_name = os.getenv('MODEL_NAME')
+redis_host = os.getenv("REDIS_HOST")
+redis_port = int(os.getenv("REDIS_PORT"))
+redis_db = os.getenv("REDIS_DB")
 
 
 async def load_questions(lessons: List[str] = None, ids: List[int] = None) -> List[Question]:
