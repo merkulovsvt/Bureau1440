@@ -8,7 +8,6 @@ RUN pip install pipenv && \
     pipenv install --system --deploy
 
 COPY ./app ./app
-#COPY .env ./
 
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
